@@ -1,0 +1,18 @@
+# Create /etc/systemd/system/webconsole.service with FULL venv path:
+
+[Unit]
+Description=MetroCluster WebConsole
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/metrocluster-webconsole
+Environment=PATH=/opt/metrocluster-webconsole/venv/bin
+ExecStart=/opt/metrocluster-webconsole/venv/bin/python app.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
