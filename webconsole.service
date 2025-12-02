@@ -1,5 +1,32 @@
 # Create /etc/systemd/system/webconsole.service with FULL venv path:
 # Fix permissions
+# sudo visudo -f /etc/sudoers.d/www-data
+www-data ALL=(ALL) NOPASSWD: \
+    /bin/cat, /bin/ls, /bin/echo, /bin/grep, /bin/awk, /bin/sed, \
+    /sbin/pvcreate, /sbin/pvremove, /sbin/pvresize, \
+    /sbin/vgcreate, /sbin/vgremove, /sbin/vgextend, /sbin/vgreduce, \
+    /sbin/lvcreate, /sbin/lvremove, /sbin/lvextend, \
+    /sbin/vgs, /sbin/vgdisplay, /sbin/lvs, /sbin/lvdisplay, \
+    /sbin/pvscan, /sbin/vgscan, /sbin/lvscan, \
+    /usr/sbin/drbdadm, /usr/sbin/targetcli, \
+    /sbin/ip, /sbin/ifconfig, /usr/sbin/iscsiadm, \
+    /usr/bin/pcs, /usr/sbin/crm, /usr/bin/systemctl
+
+cd /opt/metrocluster-webconsole
+
+# OWNERSHIP: www-data owns everything
+sudo chown -R www-data:www-data /opt/metrocluster-webconsole
+
+# TEMPLATES: readable
+sudo chmod -R 755 templates/
+sudo chmod 644 templates/*.html
+
+# EXECUTABLE: app.py
+sudo chmod 755 app.py
+
+# VENV: www-data owns python
+sudo chown -R www-data:www-data venv/
+
 #sudo chown -R www-data:www-data /opt/metrocluster-webconsole
 #sudo chmod +x /opt/metrocluster-webconsole/app.py
 
@@ -20,10 +47,12 @@ Type=simple
 User=www-data
 Group=www-data
 WorkingDirectory=/opt/metrocluster-webconsole
-Environment=PATH=/opt/metrocluster-webconsole/venv/bin
+Environment=PATH=/opt/metrocluster-webconsole/venv/bin:/bin:/usr/bin:/sbin:/usr/sbin
 ExecStart=/opt/metrocluster-webconsole/venv/bin/python app.py
 Restart=always
-RestartSec=10
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
