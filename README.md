@@ -1,5 +1,16 @@
 # unifiedstorage
 
+
+# Mini MetroCluster WebConsole
+
+### Prerequisites
+- Ubuntu 22.04+ with sudo/root access
+- Python 3.8+
+- DRBD, LVM2, targetcli installed
+
+### Install dependencies
+
+
 DRBD + LVM + iSCSI on Ubuntu 22.04 with Pacemaker/Corosync for automatic failover.
 
 Site A (node1)          Site B (node2)  
