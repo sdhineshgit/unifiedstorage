@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>MetroCluster WebConsole</h1>
+
+<!-- Status Overview -->
+<div class="status-grid">
+    <div class="status-card" id="drbd-status">Loading DRBD...</div>
+    <div class="status-card" id="cluster-status">Loading Cluster...</div>
+    <div class="status-card" id="iscsi-status">Loading iSCSI...</div>
+</div>
+
+<!-- Management Tabs -->
+<div class="tabs">
+    <button class="tab-button active" onclick="showTab('lvm')">LVM</button>
+    <button class="tab-button" onclick="showTab('drbd')">DRBD</button>
+    <button class="tab-button" onclick="showTab('iscsi')">iSCSI</button>
+    <button class="tab-button" onclick="showTab('cluster')">Cluster</button>
+</div>
+
+<!-- LVM Tab -->
+<div id="lvm" class="tab-content active">
+    <h3>LVM Management</h3>
+    
+    <div class="form-section">
+        <h4>Create Physical Volume</h4>
+        <input type="text" id="pv-device" placeholder="/dev/sdb1">
+        <button onclick="createPV()">Create PV</button>
+        <pre id="pv-result"></pre>
+    </div>
+
+    <div class="form-section">
+        <h4>Create Volume Group</h4>
+        <input type="text" id="vg-name" placeholder="vg-ha">
+        <input type="text" id="vg-devices" placeholder="/dev/sdb1 /dev/sdc1">
+        <button onclick="createVG()">Create VG</button>
+        <pre id="vg-result"></pre>
+    </div>
+
+    <div class="form-section">
+        <h4>Create Logical Volume</h4>
+        <input type="text" id="lv-vgname" placeholder="vg-ha">
+        <input type="text" id="lv-name" placeholder="lun1">
+        <input type="text" id="lv-size" placeholder="10G">
+        <button onclick="createLV()">Create LV</button>
+        <pre id="lv-result"></pre>
+    </div>
+
+    <div class="form-section">
+        <h4>Current Volumes</h4>
+        <button onclick="loadVolumes()">Refresh</button>
+        <pre id="volumes-list"></pre>
+    </div>
+</div>
+
+<!-- DRBD Tab -->
+<div id="drbd" class="tab-content">
+    <h3>DRBD Management</h3>
+    <div class="form-section">
+        <h4>DRBD Status</h4>
+        <button onclick="loadDRBDStatus()">Refresh</button>
+        <pre id="drbd-status-detail"></pre>
+    </div>
+    
+    <div class="form-section">
+        <h4>Make Primary</h4>
+        <input type="text" id="drbd-resource" value="ha-storage" placeholder="Resource name">
+        <button onclick="drbdPrimary()">Make Primary</button>
+        <pre id="drbd-primary-result"></pre>
+    </div>
+</div>
+
+<!-- iSCSI Tab -->
+<div id="iscsi" class="tab-content">
+    <h3>iSCSI Management</h3>
+    <div class="form-section">
+        <h4>Create iSCSI Target</h4>
+        <input type="text" id="iscsi-iqn" placeholder="iqn.2025-12.example:lun1">
+        <input type="text" id="iscsi-dev" placeholder="/dev/vg-ha/lun1">
+        <input type="text" id="iscsi-portal" value="192.168.1.100" placeholder="Portal IP">
+        <button onclick="createISCSI()">Create Target</button>
+        <pre id="iscsi-result"></pre>
+    </div>
+    
+    <div class="form-section">
+        <h4>iSCSI Targets</h4>
+        <button onclick="loadISCSI()">Refresh</button>
+        <pre id="iscsi-list"></pre>
+    </div>
+</div>
+
+<!-- Cluster Tab -->
+<div id="cluster" class="tab-content">
+    <h3>Cluster Management</h3>
+    <div class="form-section">
+        <h4>Cluster Status</h4>
+        <button onclick="loadClusterStatus()">Refresh</button>
+        <pre id="cluster-status-detail"></pre>
+    </div>
+</div>
+
+<!-- Logs -->
+<div class="logs-section">
+    <h4>Recent Logs</h4>
+    <button onclick="loadLogs()">Refresh Logs</button>
+    <pre id="logs"></pre>
+</div>
+{% endblock %}
