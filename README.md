@@ -10,12 +10,23 @@
 
 ### Install dependencies
 sudo apt update
+
 sudo apt install python3-pip python3-venv lvm2 drbd-utils targetcli-fb
+
 python3 -m venv venv
+
 source venv/bin/activate
+
 pip install -r requirements.txt
 
+### Configure sudo
+
+Allow your user to run required commands without password. Edit `/etc/sudoers.d/webconsole`:
+
+yourusername ALL=(ALL) NOPASSWD: /sbin/pvcreate, /sbin/vgcreate, /sbin/lvcreate, /usr/sbin/drbdadm, /usr/bin/targetcli, /usr/bin/lvs
+
 **Architecture overview**
+
 DRBD + LVM + iSCSI on Ubuntu 22.04 with Pacemaker/Corosync for automatic failover.
 
 Site A (node1)          Site B (node2)  
