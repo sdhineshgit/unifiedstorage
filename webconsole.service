@@ -6,7 +6,7 @@
 # Reload and start
 #sudo systemctl daemon-reload
 #sudo systemctl enable webconsole
-sudo systemctl start webconsole
+#sudo systemctl start webconsole
 #
 # Check status
 #sudo systemctl status webconsole
