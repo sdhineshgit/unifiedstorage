@@ -1,0 +1,43 @@
+# Set hacluster password on ALL nodes
+sudo passwd hacluster
+
+# Re-authenticate ALL nodes
+sudo pcs cluster auth -u hacluster -p [your-password]
+
+sudo pcs cluster start --enable
+
+# Restart pcsd
+sudo systemctl restart pcsd
+
+#Cluster status
+sudo pcs status
+
+
+Add below to  /etc/corosync/corosync.conf
+
+nodelist {
+	# Change/uncomment/add node sections to match cluster configuration
+
+	node {
+		# Hostname of the node.
+		name: n1
+		# Cluster membership node identifier
+		nodeid: 1
+		# Address of first link
+		ring0_addr: 192.168.1.113
+		# When knet transport is used it's possible to define up to 8 links
+		#ring1_addr: 192.168.1.1
+	}
+	node {
+    # Hostname of the node.
+    name: n2
+    # Cluster membership node identifier
+    nodeid: 2
+    # Address of first link
+    ring0_addr: 192.168.1.114
+    # When knet transport is used it's possible to define up to 8 links
+    #ring1_addr: 192.168.1.1
+        }
+
+# ...
+}
