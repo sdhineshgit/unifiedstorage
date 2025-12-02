@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Mini MetroCluster WebConsole</title>
+</head>
+<body>
+<h2>Mini MetroCluster WebConsole</h2>
+<p>This is a minimal demo web console for DRBD, LVM, and iSCSI management.</p>
+
+<h3>Create Physical Volume</h3>
+<input type="text" id="pv-device" placeholder="/dev/sdb" />
+<button onclick="pvcreate()">Create PV</button>
+<pre id="pv-result"></pre>
+
+<h3>Create Volume Group</h3>
+<input type="text" id="vg-name" placeholder="vg-ha" />
+<input type="text" id="vg-devices" placeholder="/dev/sdb1 /dev/sdc1" />
+<button onclick="vgcreate()">Create VG</button>
+<pre id="vg-result"></pre>
+
+<h3>Create Logical Volume</h3>
+<input type="text" id="lv-vgname" placeholder="vg-ha" />
+<input type="text" id="lv-name" placeholder="lun1" />
+<input type="text" id="lv-size" placeholder="10G" />
+<button onclick="lvcreate()">Create LV</button>
+<pre id="lv-result"></pre>
+
+<script>
+async function pvcreate(){
+    let device = document.getElementById('pv-device').value;
+    let res = await fetch('/pvcreate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({device})
+    });
+    let data = await res.json();
+    document.getElementById('pv-result').textContent = JSON.stringify(data, null, 2);
+}
+
+async function vgcreate(){
+    let vgname = document.getElementById('vg-name').value;
+    let devices = document.getElementById('vg-devices').value.trim().split(/\s+/);
+    let res = await fetch('/vgcreate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({vgname, devices})
+    });
+    let data = await res.json();
+    document.getElementById('vg-result').textContent = JSON.stringify(data, null, 2);
+}
+
+async function lvcreate(){
+    let vgname = document.getElementById('lv-vgname').value;
+    let lvname = document.getElementById('lv-name').value;
+    let size = document.getElementById('lv-size').value;
+    let res = await fetch('/lvcreate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({vgname, lvname, size})
+    });
+    let data = await res.json();
+    document.getElementById('lv-result').textContent = JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>
