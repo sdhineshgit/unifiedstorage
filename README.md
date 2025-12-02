@@ -25,6 +25,28 @@ Allow your user to run required commands without password. Edit `/etc/sudoers.d/
 
 yourusername ALL=(ALL) NOPASSWD: /sbin/pvcreate, /sbin/vgcreate, /sbin/lvcreate, /usr/sbin/drbdadm, /usr/bin/targetcli, /usr/bin/lvs
 
+Adjust paths if different on your system.
+
+### Run
+
+source venv/bin/activate
+
+sudo python app.py
+
+
+
+Visit `http://<server-ip>:8000` in your browser.
+
+---
+
+### Next Steps
+
+- Add support for DRBD resource management, cluster (Pacemaker) status APIs.
+- Add iSCSI target/LUN management form.
+- Enhance UI with status views, logs, and alerts.
+- Add authentication (Flask-Login or OAuth).
+- Improve error handling and command safety.
+
 **Architecture overview**
 
 DRBD + LVM + iSCSI on Ubuntu 22.04 with Pacemaker/Corosync for automatic failover.
