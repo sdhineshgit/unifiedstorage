@@ -1,51 +1,68 @@
 # unifiedstorage
 
 
-# Mini MetroCluster WebConsole
+# 🚀 MetroCluster WebConsole - Complete Deployment
 
-### Prerequisites
-- Ubuntu 22.04+ with sudo/root access
-- Python 3.8+
-- DRBD, LVM2, targetcli installed
+## Prerequisites
+Ubuntu 22.04+ with DRBD/LVM/iSCSI/Pacemaker installed
 
-### Install dependencies
+## 1. Install System Dependencies
 sudo apt update
+sudo apt install -y python3-pip python3-venv lvm2 drbd-utils targetcli-fb
+pacemaker corosync pcs resource-agents fence-agents open-iscsi
 
-sudo apt install python3-pip python3-venv lvm2 drbd-utils targetcli-fb
 
+## 2. Setup Python Environment
+cd metrocluster-webconsole
 python3 -m venv venv
-
 source venv/bin/activate
-
 pip install -r requirements.txt
 
-### Configure sudo
 
-Allow your user to run required commands without password. Edit `/etc/sudoers.d/webconsole`:
+## 3. Configure Sudo (Critical!)
+sudo vi -f /etc/sudoers.d/webconsole
 
-yourusername ALL=(ALL) NOPASSWD: /sbin/pvcreate, /sbin/vgcreate, /sbin/lvcreate, /usr/sbin/drbdadm, /usr/bin/targetcli, /usr/bin/lvs
+Add:
+www-data ALL=(ALL) NOPASSWD:
+/sbin/pvcreate, /sbin/vgcreate, /sbin/lvcreate,
+/sbin/vgs, /sbin/lvs, /usr/sbin/drbdadm,
+/usr/bin/targetcli, /usr/bin/pcs, /usr/sbin/crm
 
-Adjust paths if different on your system.
 
-### Run
+## 4. Fix Permissions
+sudo chown -R www-data:www-data /path/to/metrocluster-webconsole
+sudo chmod +x app.py
 
+
+## 5. Run Development Server
 source venv/bin/activate
-
-sudo python app.py
-
+sudo -u www-data python app.py
 
 
-Visit `http://<server-ip>:8000` in your browser.
+## 6. Production Deployment (Systemd)
+Create `/etc/systemd/system/webconsole.service`:
+[Unit]
+Description=MetroCluster WebConsole
+After=network.target
 
----
+[Service]
+User=www-data
+WorkingDirectory=/path/to/metrocluster-webconsole
+ExecStart=/path/to/metrocluster-webconsole/venv/bin/python app.py
+Restart=always
 
-### Next Steps
+[Install]
+WantedBy=multi-user.target
 
-- Add support for DRBD resource management, cluster (Pacemaker) status APIs.
-- Add iSCSI target/LUN management form.
-- Enhance UI with status views, logs, and alerts.
-- Add authentication (Flask-Login or OAuth).
-- Improve error handling and command safety.
+undefined
+sudo systemctl daemon-reload
+sudo systemctl enable webconsole
+sudo systemctl start webconsole
+
+
+## 7. Access
+- **URL**: http://your-server:8000
+- **Credentials**: admin / metro123
 
 **Architecture overview**
 
