@@ -15,8 +15,11 @@ DRBD + LVM + iSCSI on Ubuntu 22.04 with Pacemaker/Corosync for automatic failove
 
 Site A (node1)          Site B (node2)  
 ┌─────────────────┐    ┌─────────────────┐
-│ Local Disk      │    │ Local Disk      │
+
+│Local Disk│    │ Local Disk      │
+
 │ /dev/sdb        │◄──►│ /dev/sdb        │ ← DRBD sync replication
+
 └─────┬───────────┘    └─────┬───────────┘
       │                       │
 ┌─────▼───────────┐    ┌─────▼───────────┐
