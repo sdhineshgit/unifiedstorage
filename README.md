@@ -9,6 +9,11 @@
 - DRBD, LVM2, targetcli installed
 
 ### Install dependencies
+sudo apt update
+sudo apt install python3-pip python3-venv lvm2 drbd-utils targetcli-fb
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
 **Architecture overview**
 DRBD + LVM + iSCSI on Ubuntu 22.04 with Pacemaker/Corosync for automatic failover.
