@@ -1,4 +1,15 @@
 # Create /etc/systemd/system/webconsole.service with FULL venv path:
+# Fix permissions
+#sudo chown -R www-data:www-data /opt/metrocluster-webconsole
+#sudo chmod +x /opt/metrocluster-webconsole/app.py
+
+# Reload and start
+#sudo systemctl daemon-reload
+#sudo systemctl enable webconsole
+sudo systemctl start webconsole
+#
+# Check status
+#sudo systemctl status webconsole
 
 [Unit]
 Description=MetroCluster WebConsole
