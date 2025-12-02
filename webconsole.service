@@ -10,7 +10,7 @@ www-data ALL=(ALL) NOPASSWD: \
     /sbin/pvscan, /sbin/vgscan, /sbin/lvscan, \
     /usr/sbin/drbdadm, /usr/sbin/targetcli, \
     /sbin/ip, /sbin/ifconfig, /usr/sbin/iscsiadm, \
-    /usr/bin/pcs, /usr/sbin/crm, /usr/bin/systemctl
+    /usr/sbin/pcs, /usr/sbin/crm, /usr/bin/systemctl
 
 cd /opt/metrocluster-webconsole
 
