@@ -1,0 +1,109 @@
+Deployment Instructions
+1. Prerequisites (Run on BOTH nodes first)
+
+
+# Verify DRBD is synced
+sudo drbdadm status ha-storage  # Both should show UpToDate
+
+# Verify LVM exists
+sudo vgdisplay vg-ha
+
+sudo lvdisplay vg-ha/lun1
+
+# Verify cluster sees both nodes
+sudo pcs status nodes  # Should show n1 + n2 online
+
+2. EDIT Configuration
+
+
+nano deploy-2node-metrocluster.sh
+
+Update these variables with your actual values:
+
+NODE1_IP, NODE2_IP → Your node IPs
+
+VIP_IP → Your floating IP (e.g., 192.168.1.100/24)
+
+IQN → Your iSCSI IQN
+
+3. Run Deployment (on EITHER node)
+
+
+chmod +x deploy-2node-metrocluster.sh
+
+sudo ./deploy-2node-metrocluster.sh
+
+4. Verify Success
+
+
+sudo pcs status
+
+Expected Output:
+
+
+Cluster Summary:
+  * 2 nodes configured
+  * 5 resources configured ✅
+
+Node List:
+ * Node n1 (1): online
+ * Node n2 (2): online ✅
+
+Full List of Resources:
+ * Group: ha-group     (vip  iqn-target  lun1) ✅
+ * Group: storage-group (drbd-ha  vg-ha)       ✅
+
+Complete Test Matrix
+
+1. Client Connectivity
+
+# On CLIENT
+sudo iscsiadm -m discovery -t sendtargets -p 192.168.1.100
+sudo iscsiadm -m node -T iqn.2025-12.college:ha.lun1 -p 192.168.1.100 -l
+lsblk  # LUN visible ✅
+
+2. Manual Failover
+
+sudo pcs resource move ha-group n2  # Move to node2
+sudo pcs resource unmove ha-group   # Return to node1
+
+3. Automatic Failover Test
+
+sudo pcs node standby n1  # Simulate n1 failure
+# VIP + iSCSI → Automatically moves to n2!
+sudo pcs node unstandby n1  # n1 recovers
+
+4. WebConsole Monitoring
+
+
+http://192.168.1.10:8000  → Node1 Console
+http://192.168.1.11:8000  → Node2 Console (same cluster view)
+Production Hardening (Optional)
+
+
+# Enable STONITH (real fencing)
+sudo pcs stonith create fence-vm fence_virsh ...
+
+# Location constraints (keep DRBD primary on preferred node)
+sudo pcs constraint location drbd-ha-master prefers n1 INFINITY
+
+# Notifications
+sudo pcs resource create notify ocf:pacemaker:OCF:notify op monitor interval=60s
+Rollback/Cleanup (if needed)
+
+sudo pcs resource cleanup
+sudo pcs resource delete lun1 iqn-target vip vg-ha drbd-ha --force
+sudo pcs constraint remove --all
+🎉 2-Node MetroCluster LIVE!
+
+Site A (n1:192.168.1.10)  ↔↔↔  Site B (n2:192.168.1.11)
+     │                           │
+   DRBD SyncMirror (ha-storage)  
+     │                           │
+   LVM vg-ha/lun1 (10G mirrored)
+     │                           │
+   iSCSI iqn.2025-12.college:ha.lun1
+         │
+    VIP:192.168.1.100 ← Clients connect here
+         │
+    Pacemaker → Automatic failover in <30s!
