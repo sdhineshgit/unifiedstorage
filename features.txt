@@ -1,0 +1,15 @@
+## Features
+✅ Full LVM management (PV/VG/LV)
+✅ DRBD resource creation & status
+✅ iSCSI target/LUN management
+✅ Pacemaker cluster status
+✅ Real-time logs & monitoring
+✅ Secure authentication
+✅ Command injection protection
+✅ Auto-refreshing dashboard
+
+## Security Notes
+- Change default password in `app.py`
+- Use HTTPS in production (nginx reverse proxy)
+- Restrict sudo commands carefully
+- Firewall: allow only trusted IPs to port 8000
